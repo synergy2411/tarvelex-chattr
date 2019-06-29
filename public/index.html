@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="">
+
+<head>
+    <title>Title Page</title>
+
+    <!-- jQuery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <!-- Socket.IO -->
+    <script src="/socket.io/socket.io.js"></script>
+    <!-- Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+</head>
+
+<body>
+    <div class="container jumbotron">
+
+        <form>
+            <h1 class="text-center">Chattr App</h1>
+            <div class="row">
+                <div class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
+
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <textarea readonly name="taMsg" id="taMsg" cols="30" rows="10"
+                                class="form-control"></textarea>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row">
+                        <div class="col-sm-6 col-xs-6 col-md-6">
+                            <input type="text" class="form-control" id="txtMsg">
+                        </div>
+                        <div class="col-sm-6 col-xs-6 col-md-6">
+                            <button class="btn btn-success btn-block" id="btnSend">
+                                Send
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </form>
+
+    </div>
+
+
+    <script>
+
+        $(document).ready(function () {
+            const socket = io.connect("/");
+            let chatterName;
+            socket.on("acknowledge", (data) => {
+                console.log(data.message);
+                chatterName = prompt("Pls enter name : ");
+            })
+
+            socket.on("MsgToClient", (username, msg) => {
+                $("#taMsg").append(username + " : " + msg + "\n");
+            })
+
+            $("#btnSend").on("click", (event) => {
+                event.preventDefault();
+                let message = $("#txtMsg").val();
+                socket.emit("MsgToServer", chatterName, message);
+                $("#txtMsg").val('');
+            })
+        })
+
+    </script>
+
+</body>
+
+</html>
